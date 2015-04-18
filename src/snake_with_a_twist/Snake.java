@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package snake2;
+package snake_with_a_twist;
 
 import javax.swing.JFrame;
 
@@ -11,9 +11,9 @@ import javax.swing.JFrame;
  *
  * @author jon
  */
-public class Snake2 extends JFrame{
+public class Snake extends JFrame{
     
-    public Snake2(){
+    public Snake(){
        
         setTitle("Snake"); 
         setResizable(false);
@@ -30,7 +30,7 @@ public class Snake2 extends JFrame{
      */
     public static void main(String[] args) {
         
-        new Snake2();
+        new Snake();
         
     }
     
