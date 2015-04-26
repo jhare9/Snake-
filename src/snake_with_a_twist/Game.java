@@ -1,7 +1,8 @@
 /*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ * and open the template in the editor. 
+ * ToDo: create a game menu and help menu.
  */
 package snake_with_a_twist;
 
@@ -54,8 +55,8 @@ public class Game extends JPanel implements Runnable, KeyListener{
     private int score; 
     private int highScore; 
     
-    //boolean to detect colisions
-    private boolean colision;
+    //boolean to detect collisions
+    private boolean collision;
     
     //timer for the random generation of foods 
     private long timer;
@@ -74,7 +75,7 @@ public class Game extends JPanel implements Runnable, KeyListener{
     
     private void init(){
         
-        snakeParts.setLocation(5,10);
+        snakeParts.setLocation(0,0);
         snake.addFirst(snakeParts);
         snakeLength = 3; 
         
@@ -88,9 +89,9 @@ public class Game extends JPanel implements Runnable, KeyListener{
         left = false; 
         score = 0;    
         
-        // for right now 
-        colision = false; 
-        
+       // colision variable 
+        collision = false; 
+        // open the score txt file and set the high score variable
         fileReader("highscore.txt");
     }
     
@@ -127,25 +128,28 @@ public class Game extends JPanel implements Runnable, KeyListener{
                 }  
             }
         
-          if(!colision){
+          if(!collision){
                    
             //add a new point to the head of the snake
             snake.addFirst(new Point(snakeParts.x,snakeParts.y)); 
             
              // delete the last elements if its longer than the length
-            if(snake.size() > snakeLength)
+            while(snake.size() > snakeLength){
                 snake.removeLast();
+            }
            
-             // colision dections 
+             // collision dections 
             for(int s = 3; s < snake.size(); s++)
                 if(snake.getFirst().x == snake.get(s).x && snake.getFirst().y == snake.get(s).y){
-                            colision = true;
+                            collision = true;
                             fileWriter("highscore.txt");
                 }
-            
-            if(snake.getFirst().y * BOX_HEIGHT > HEIGHT - BOX_HEIGHT || snake.getFirst().y * BOX_HEIGHT < 0
+            // wall collision detections 
+            if(snake.getFirst().getY() >  (HEIGHT / BOX_HEIGHT)-1 || snake.getFirst().y * BOX_HEIGHT < 0
                     || snake.getFirst().x * BOX_WIDTH > WIDTH - BOX_WIDTH || snake.getFirst().x < 0){
-                colision = true; 
+                collision = true;
+                
+                if(score > highScore)
                 fileWriter("highscore.txt");
             }
             
@@ -156,9 +160,9 @@ public class Game extends JPanel implements Runnable, KeyListener{
                 }
                 else if(poision){
                    snakeLength--;
-                   if(snakeLength < 2)
-                       colision = true;
-                   snake.removeLast();
+                   if(snakeLength < 3)
+                       collision = true;
+                   
                    if(score != 0)
                        score--;
                 }
@@ -190,11 +194,16 @@ public class Game extends JPanel implements Runnable, KeyListener{
         
         
        
-        // draw the snake 
-        g.setColor(Color.GREEN);
-        for(int s = 0; s < snake.size(); s++)
+        // draw the snake       
+        for(int s = 0; s < snake.size(); s++){
+            // set the snakes head to the color of orange.
+            if(s == 0){
+                g.setColor(Color.orange);
+            }
             g.fillRect(snake.get(s).x * BOX_WIDTH, snake.get(s).y * BOX_HEIGHT, BOX_WIDTH,BOX_HEIGHT);
-        
+            // set the rest of the snakes body to green.
+            g.setColor(Color.green);
+        }
         // draw food for the snake
         if(normalFood)
             g.setColor(Color.red);
@@ -206,17 +215,25 @@ public class Game extends JPanel implements Runnable, KeyListener{
          // draw the verticle lines
         g.setColor(Color.gray);
         
-        for(int x = 0; x < WIDTH; x++)
+        for(int x = 0; x < WIDTH / BOX_WIDTH; x++)
             g.drawLine(x*BOX_WIDTH,0,x * BOX_WIDTH, HEIGHT);
         
         // draw the horizontal lines 
-        for(int y = 0; y < HEIGHT; y++)
+        for(int y = 0; y < (HEIGHT / BOX_HEIGHT); y++)
             g.drawLine(0,y * BOX_HEIGHT,WIDTH, y * BOX_HEIGHT);
         
        //paint scoring system
        g.setColor(Color.white);
        g.drawString("high score: "+highScore,20,20);
        g.drawString("your Score: "+score,20,HEIGHT -20);
+       
+       // change colors for the dead snake
+       if(collision){
+           g.setColor(Color.gray);
+           for(int i = 0 ; i < snake.size(); i++){
+                g.fillRect(snake.get(i).x * BOX_WIDTH, snake.get(i).y * BOX_HEIGHT, BOX_WIDTH,BOX_HEIGHT);
+           }
+       }
         
     }
     
